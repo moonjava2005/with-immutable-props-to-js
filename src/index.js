@@ -19,45 +19,59 @@
 
 import hoistNonReactStatics from 'hoist-non-react-statics'
 import React from 'react'
-import { Iterable } from 'immutable'
+import {Iterable} from 'immutable'
 import PropTypes from 'prop-types'
+import memoize from 'memoize-one'
 
 const getDisplayName = Component => {
     return Component.displayName || Component.name || 'Component'
 }
 
 const withImmutablePropsToJS = WrappedComponent => {
-    const Wrapper = props => {
-        const { forwardedRef, ...rest } = props
+    class Wrapper extends React.PureComponent {
+        static propTypes = {
+            forwardedRef: PropTypes.oneOfType([
+                PropTypes.func,
+                PropTypes.shape({current: PropTypes.node}),
+            ])
+        }
+        static defaultProps = {
+            forwardedRef: null,
+        }
 
-        const propsJS = Object.entries(rest).reduce(
-            (newProps, [propKey, propValue]) => {
-                const canConvertToJS =
-                    Iterable.isIterable(propValue) &&
-                    typeof propValue.toJS === 'function'
-                newProps[propKey] = canConvertToJS
-                    ? propValue.toJS()
-                    : propValue
-                return newProps
-            },
-            {},
-        )
-        return <WrappedComponent {...propsJS} ref={forwardedRef} />
-    }
+        memorizeMap = {}
 
-    Wrapper.propTypes = {
-        forwardedRef: PropTypes.oneOfType([
-            PropTypes.func,
-            PropTypes.shape({ current: PropTypes.node }),
-        ]),
-    }
+        render() {
+            const {forwardedRef, ...rest} = this.props
 
-    Wrapper.defaultProps = {
-        forwardedRef: null,
+            const propsJS = Object.entries(rest).reduce(
+                (newProps, [propKey, propValue]) => {
+                    const canConvertToJS =
+                        Iterable.isIterable(propValue) &&
+                        typeof propValue.toJS === 'function'
+                    let memo = this.memorizeMap[propKey]
+                    if (!memo) {
+                        memo = memoize((immutableValue) => {
+                            if (immutableValue) {
+                                return immutableValue.toJS()
+                            }
+                            return immutableValue
+                        })
+                        this.memorizeMap[propKey] = memo
+                    }
+                    newProps[propKey] = canConvertToJS
+                        ? memo(propValue)
+                        : propValue
+                    return newProps
+                },
+                {},
+            )
+            return <WrappedComponent {...propsJS} ref={forwardedRef}/>
+        }
     }
 
     const WrapperWithForwardedRef = React.forwardRef((props, ref) => (
-        <Wrapper {...props} forwardedRef={ref} />
+        <Wrapper {...props} forwardedRef={ref}/>
     ))
 
     WrapperWithForwardedRef.displayName = `withImmutablePropsToJS(${getDisplayName(
