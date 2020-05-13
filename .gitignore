@@ -2,3 +2,13 @@ node_modules
 yarn-error.log
 lib
 coverage
+
+.idea/inspectionProfiles/Project_Default.xml
+
+.idea/misc.xml
+
+.idea/modules.xml
+
+.idea/with-immutable-props-to-js.iml
+
+.idea/workspace.xml

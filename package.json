@@ -1,6 +1,6 @@
 {
   "name": "with-immutable-props-to-js",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A higher-order component for keeping Immutable objects outside your presentational components",
   "keywords": [
     "react",
@@ -37,6 +37,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^25.3.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^6.8.0",
@@ -68,6 +69,7 @@
     ]
   },
   "dependencies": {
-    "hoist-non-react-statics": "^3.3.2"
+    "hoist-non-react-statics": "^3.3.2",
+    "memoize-one": "^5.1.1"
   }
 }
