@@ -14,15 +14,21 @@
 
 A higher-order component for keeping Immutable objects outside your presentational components
 
-## Installation
+## Installation from fork
 
 ```
+yarn add https://github.com/moonjava2005/with-immutable-props-to-js
+
+The original is
 yarn add with-immutable-props-to-js
 ```
 
 or
 
 ```
+npm install https://github.com/moonjava2005/with-immutable-props-to-js
+
+The original is
 npm install with-immutable-props-to-js
 ```
 
